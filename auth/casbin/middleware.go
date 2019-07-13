@@ -54,9 +54,16 @@ func NewEnforcer(
 			casbinModel := ctx.Value(CasbinModelContextKey)
 			casbinPolicy := ctx.Value(CasbinPolicyContextKey)
 
-			enforcer := stdcasbin.NewEnforcer(casbinModel, casbinPolicy)
+			enforcer, err := stdcasbin.NewEnforcer(casbinModel, casbinPolicy)
+			if err != nil {
+				return nil, err
+			}
 			ctx = context.WithValue(ctx, CasbinEnforcerContextKey, enforcer)
-			if !enforcer.Enforce(subject, object, action) {
+			ok, err := enforcer.Enforce(subject, object, action)
+			if err != nil {
+				return nil, err
+			}
+			if !ok {
 				return nil, ErrUnauthorized
 			}
 			return next(ctx, request)

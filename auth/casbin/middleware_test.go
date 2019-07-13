@@ -11,7 +11,10 @@ import (
 func TestStructBaseContext(t *testing.T) {
 	e := func(ctx context.Context, i interface{}) (interface{}, error) { return ctx, nil }
 
-	m := stdcasbin.NewModel()
+	m, err := stdcasbin.NewModel()
+	if err != nil {
+		t.Fatal(err)
+	}
 	m.AddDef("r", "r", "sub, obj, act")
 	m.AddDef("p", "p", "sub, obj, act")
 	m.AddDef("e", "e", "some(where (p.eft == allow))")
